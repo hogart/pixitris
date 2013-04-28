@@ -1,0 +1,73 @@
+{
+    "frames": {
+        "bronze": {
+            "frame": {"x": 0, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "violet": {
+            "frame": {"x": 40, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "grey": {
+            "frame": {"x": 80, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "cyan": {
+            "frame": {"x": 120, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "purple": {
+            "frame": {"x": 160, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "golden": {
+            "frame": {"x": 200, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "blue": {
+            "frame": {"x": 240, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "red": {
+            "frame": {"x": 280, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "green": {
+            "frame": {"x": 320, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "yellow": {
+            "frame": {"x": 360, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "pink": {
+            "frame": {"x": 400, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        },
+        "sky": {
+            "frame": {"x": 440, "y": 0, "w": 40, "h": 40},
+            "rotated": false,
+            "trimmed": false
+        }
+    },
+    "meta": {
+    	"app": "http://www.texturepacker.com",
+    	"version": "1.0",
+    	"image": "../img/blocks.png",
+    	"format": "RGBA8888",
+    	"size": {"w":480,"h":40},
+    	"scale": "1",
+    	"smartupdate": "$TexturePacker:SmartUpdate:9e3e5afd01ea8e418afabfbdcd724485$"
+    }
+}

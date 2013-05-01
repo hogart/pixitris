@@ -2,9 +2,10 @@ define(
     [
         'lib/Chitin',
         'config',
+        'util',
         '_'
     ],
-    function (Chitin, config, _) {
+    function (Chitin, config, util, _) {
         var Stage = Chitin.Abstract.extend({
             defaults: {
                 container: document.body,
@@ -64,7 +65,7 @@ define(
             },
 
             setRenderer: function () {
-                this.renderer = PIXI.autoDetectRenderer(this.params.w, this.params.h, this.params.view, this.params.transparent)
+                this.renderer = PIXI.autoDetectRenderer(this.params.w, this.params.h, this.params.view, this.params.transparent);
             },
 
             loadSprites: function (sprites, callback) {
@@ -76,6 +77,12 @@ define(
                 };
 
                 assetLoader.load();
+            },
+
+            addField: function (field) {
+                this.field = field;
+                this.stage.addChild(this.field.container);
+                util.renullPos(this.field.container);
             }
         });
 

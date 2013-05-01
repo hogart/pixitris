@@ -36,38 +36,31 @@ require(
             var field = new Field();
 
             initStage(function () {
+                stage.addField(field);
+
                 stage.start();
 
                 currentColumn = new Column();
-                stage.stage.addChild(currentColumn.container);
+                field.setColumn(currentColumn);
 
                 stage.registerAnimate(function () {
                     if (renew) {
-                        currentColumn && stage.stage.removeChild(currentColumn.container);
-                        currentColumn = new Column();
-                        stage.stage.addChild(currentColumn.container);
+                        field.removeColumn();
                         renew = false;
                     } else {
-                        currentColumn.fall(speed);
-                        if (toLeft) {
-                            currentColumn.toLeft();
-                            toLeft = false;
-                        }
-                        if (toRight) {
-                            currentColumn.toRight();
-                            toRight = false;
-                        }
+                        field.moveDown();
                     }
                 })
             });
 
             $(document).on('click', function () { renew = true });
 
-            Mousetrap.bind('space', function () { speed = speed ? 0 : 1 });
-            Mousetrap.bind('left', function () { toLeft = true; });
-            Mousetrap.bind('right', function () { toRight = true; });
-            Mousetrap.bind('down', function () { speed = 10; }, 'keydown');
-            Mousetrap.bind('down', function () { speed = 1; }, 'keyup');
+            Mousetrap.bind('space', function () { field.pause = !field.pause });
+            Mousetrap.bind(['left', 'a'], function () { field.moveLeft() });
+            Mousetrap.bind(['right', 'd'], function () { field.moveRight() });
+            Mousetrap.bind(['down', 's'], function () { field.currentSpeed = 10; }, 'keydown');
+            Mousetrap.bind(['down', 's'], function () { field.currentSpeed = 1; }, 'keyup');
+            Mousetrap.bind(['up', 'w'], function () { field.shuffleColumn() });
         })
 
     }

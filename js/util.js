@@ -1,22 +1,41 @@
-define(function () {
+define(
+    [
+        '_'
+    ],
+
+    function (_) {
     'use strict';
 
-    function getRandomFloat (min, max) {
+    var util = {};
+
+    var getRandomFloat = util.getRandomFloat = function (min, max) {
       return Math.random() * (max - min) + min;
-    }
+    };
 
-    function getRandomInt(min, max) {
+    var getRandomInt = util.getRandomInt = function (min, max) {
         return Math.round(getRandomFloat(min, max));
-    }
+    };
 
-    function getRandomItem (arr) {
+    var getRandomItem = util.getRandomItem = function (arr) {
         var index = getRandomInt(0, arr.length - 1);
         return arr[index];
-    }
+    };
 
-    return {
-        getRandomFloat: getRandomFloat,
-        getRandomInt: getRandomInt,
-        getRandomItem: getRandomItem
-    }
+    util.renullPos = function (displayObj, options) {
+        options || (options = {});
+
+        displayObj.position.x = options.x || 0;
+        displayObj.position.y = options.y || 0;
+
+        if (displayObj.anchor) {
+            displayObj.anchor.x = options.anchorX || 0;
+            displayObj.anchor.y = options.anchorY || 0;
+        }
+
+        if ('alpha' in displayObj && 'alpha' in options) {
+            displayObj.alpha = options.alpha;
+        }
+    };
+
+    return util;
 });

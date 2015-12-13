@@ -1,91 +1,93 @@
-define(
-    [
-        'lib/Chitin',
-        'config',
-        'util',
-        '_'
-    ],
-    function (Chitin, config, util, _) {
-        var Stage = Chitin.Abstract.extend({
-            defaults: {
-                container: document.body,
-                w: 640,
-                h: 480,
-                view: null,
-                transparent: true,
+'use strict';
 
-                stageBG: 0x000000
-            },
+import Defaultable from './Defaultable';
+import config from './config';
+import PIXI from '../node_modules/pixi.js/bin/pixi';
+import reNullPos from './reNullPos';
+import {bindAll, uniqueId} from '../node_modules/lodash/index';
 
-            initialize: function (options) {
-                Stage.__super__.initialize.call(this, options);
+export default class Stage extends Defaultable {
+    defaults () {
+        return {
+            container: document.body,
+            w: 640,
+            h: 480,
+            view: null,
+            transparent: true,
 
-                this.animateHandlers = {};
+            stageBG: 0x000000
+        }
+    }
 
-                this.setRenderer();
-                this.setStage();
+    constructor (options) {
+        super(options);
 
-                _.bindAll(this, ['animate', 'start']);
+        this.animateHandlers = {};
 
-                if (this.params.sprites) {
-                    this.loadSprites(this.params.sprites, this.params.onSprites || this.start);
-                }
-            },
+        this.setRenderer();
+        this.setStage();
 
-            start: function () {
-                this.params.container.appendChild(this.renderer.view);
-                this.animate();
-            },
+        _.bindAll(this, ['animate', 'start']);
 
-            registerAnimate: function (handler, context) {
-                var id = _.uniqueId('animate');
+        if (this.params.sprites) {
+            this.loadSprites(this.params.sprites, this.params.onSprites || this.start);
+        }
+    }
 
-                this.animateHandlers[id] = handler.bind(context);
+    start () {
+        this.params.container.appendChild(this.renderer.view);
+        this.animate();
+    }
 
-                return id;
-            },
+    registerAnimate (handler, context) {
+        var id = _.uniqueId('animate');
 
-            unregisterAnimate: function (id) {
-                delete this.animateHandlers[id];
-            },
+        this.animateHandlers[id] = handler.bind(context);
 
-            animate: function () {
-                requestAnimFrame(this.animate);
+        return id;
+    }
 
-                for (var handler in this.animateHandlers) {
-                    this.animateHandlers[handler](this);
-                }
+    unregisterAnimate (id) {
+        delete this.animateHandlers[id];
+    }
 
-                // render the stage
-                this.renderer.render(this.stage);
-            },
+    animate () {
+        requestAnimationFrame(this.animate);
 
-            setStage: function () {
-                this.stage = new PIXI.Stage(this.params.bg)
-            },
+        for (var handler in this.animateHandlers) {
+            this.animateHandlers[handler](this);
+        }
 
-            setRenderer: function () {
-                this.renderer = PIXI.autoDetectRenderer(this.params.w, this.params.h, this.params.view, this.params.transparent);
-            },
+        // render the stage
+        this.renderer.render(this.stage);
+    }
 
-            loadSprites: function (sprites, callback) {
-                var that = this,
-                    assetLoader = new PIXI.AssetLoader(sprites);
+    setStage () {
+        this.stage = new PIXI.Stage(this.params.bg)
+    }
 
-                assetLoader.onComplete = function () {
-                    callback(that);
-                };
+    setRenderer () {
+        this.renderer = PIXI.autoDetectRenderer(this.params.w, this.params.h, this.params.view, this.params.transparent);
+    }
 
-                assetLoader.load();
-            },
+    loadSprites (sprites, callback) {
+        const assetLoader = PIXI.loader;
 
-            addField: function (field) {
-                this.field = field;
-                this.stage.addChild(this.field.container);
-                util.renullPos(this.field.container);
-            }
+        sprites.forEach((sprite) => {
+            assetLoader.add(sprite);
         });
 
-        return Stage;
+        assetLoader.once('complete', () => {
+            callback(this);
+        });
+
+        assetLoader.load();
     }
-);
+
+    addField (field) {
+        this.field = field;
+        this.stage.addChild(this.field.container);
+        reNullPos(this.field.container);
+    }
+}
+

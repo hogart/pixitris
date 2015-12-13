@@ -4,13 +4,15 @@
   <meta charset="utf-8"/>
   <title></title>
 
-  <script src="js/lib/pixi.js"></script>
-  <script src="js/requireConfig.js"></script>
-  <script src="js/lib/require.js" data-main="app"></script>
-
   <link rel="stylesheet" type="text/css" href="css/app.css"/>
 </head>
 <body>
   <div class="js-f"></div>
+
+  <!-- js files -->
+  <script src="node_modules/systemjs/dist/system.src.js"></script>
+  <script src="config.js"></script>
+  <script>System.import('./js/app.js');</script>
+  <!-- js files -->
 </body>
 </html>

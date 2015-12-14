@@ -5,6 +5,7 @@ import config from './config';
 import PIXI from '../node_modules/pixi.js/bin/pixi';
 import reNullPos from './reNullPos';
 import {bindAll, uniqueId} from '../node_modules/lodash/index';
+import $ from '../node_modules/jquery/dist/jquery';
 
 export default class Stage extends Defaultable {
     defaults () {
@@ -15,22 +16,24 @@ export default class Stage extends Defaultable {
             view: null,
             transparent: true,
 
-            stageBG: 0x000000
+            stageBG: 0x000000,
+
+            onSprites: this.start.bind(this)
         }
     }
 
     constructor (options) {
         super(options);
 
-        this.animateHandlers = {};
+        this.animateHandlers = new Map();
 
         this.setRenderer();
         this.setStage();
 
-        _.bindAll(this, ['animate', 'start']);
+        bindAll(this, ['animate', 'start']);
 
         if (this.params.sprites) {
-            this.loadSprites(this.params.sprites, this.params.onSprites || this.start);
+            this.loadSprites(this.params.sprites, this.params.onSprites);
         }
     }
 
@@ -40,22 +43,22 @@ export default class Stage extends Defaultable {
     }
 
     registerAnimate (handler, context) {
-        var id = _.uniqueId('animate');
+        const id = uniqueId('animate');
 
-        this.animateHandlers[id] = handler.bind(context);
+        this.animateHandlers.set(id, handler.bind(context));
 
         return id;
     }
 
     unregisterAnimate (id) {
-        delete this.animateHandlers[id];
+        this.animateHandlers.remove(id);
     }
 
     animate () {
         requestAnimationFrame(this.animate);
 
-        for (var handler in this.animateHandlers) {
-            this.animateHandlers[handler](this);
+        for (let handler of this.animateHandlers.values()) {
+            handler(this);
         }
 
         // render the stage
@@ -63,7 +66,7 @@ export default class Stage extends Defaultable {
     }
 
     setStage () {
-        this.stage = new PIXI.Stage(this.params.bg)
+        this.stage = new PIXI.Stage(this.params.bg);
     }
 
     setRenderer () {

@@ -5,6 +5,7 @@
   "main": "js/app.js",
   "dependencies": {
     "fnd": "^0.3.2",
+    "jquery": "^2.1.4",
     "lodash": "^3.10.1",
     "pixi.js": "3.x",
     "rpg-tools": "^0.1.2"

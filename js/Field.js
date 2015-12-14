@@ -17,7 +17,7 @@ export default class Field extends Defaultable {
     constructor (options) {
         super(options);
 
-        this.clearField();
+        this.initField();
 
         this.container = new PIXI.Container();
         reNullPos(this.container);
@@ -40,11 +40,11 @@ export default class Field extends Defaultable {
 //                this.printDebug();
     }
 
-    clearField () {
-        var field = [];
-        for (var x = 0; x < this.params.w; x++) {
+    initField () {
+        const field = [];
+        for (let x = 0; x < this.params.w; x++) {
             field[x] = [];
-            for (var y = 0; y < this.params.h; y++) {
+            for (let y = 0; y < this.params.h; y++) {
                 field[x].push({color: undefined});
             }
         }
@@ -53,24 +53,19 @@ export default class Field extends Defaultable {
     }
 
     render () {
-        var field = this.field,
-            col,
-            color,
-            sprite;
-
         if (this.clearRender) {
-            for (var i = 0; i < this.cubesChildren.length; i++) {
+            for (let i = 0; i < this.cubesChildren.length; i++) {
                 this.container.removeChild(this.cubesChildren[i]);
             }
-            this.cubesChildren = [];
+            this.cubesChildren.length = 0;
         }
 
-        for (var x = this.params.w - 1; x >= 0; x--) {
-            col = field[x];
-            for (var y = this.params.h - 1; y >= 0; y--) {
-                color = col[y].color;
+        for (let x = this.params.w - 1; x >= 0; x--) {
+            let col = this.field[x];
+            for (let y = this.params.h - 1; y >= 0; y--) {
+                let color = col[y].color;
                 if (color) {
-                    sprite = PIXI.Sprite.fromFrame(color);
+                    let sprite = PIXI.Sprite.fromFrame(color);
                     this.cubesChildren.push(sprite);
                     this.container.addChild(sprite);
                     reNullPos(sprite, {x: x * config.cubeSize, y: y * config.cubeSize});
@@ -80,25 +75,25 @@ export default class Field extends Defaultable {
     }
 
     shouldDie (x, y) {
-        var field = this.field,
-            curColor = field[x][y].color;
+        const field = this.field;
+        const curColor = field[x][y].color;
 
         if (!field[x][y].color) {
             return
         }
 
-        var toDelete = [],
-            maxX = this.params.w - 1,
-            maxY = this.params.h - 1;
+        const toDelete = [];
+        const maxX = this.params.w - 1;
+        const maxY = this.params.h - 1;
 
         // horizontal right
-        if (x + 1 <= maxX && curColor == field[x + 1][y].color) {
-            if (x + 2 <= maxY && curColor == field[x + 2][y].color) {
+        if (x + 1 <= maxX && curColor === field[x + 1][y].color) {
+            if (x + 2 <= maxX && curColor === field[x + 2][y].color) {
                 toDelete.push(field[x][y], field[x + 1][y], field[x + 2][y]);
-                if (x + 3 <= maxX && curColor == field[x + 3][y].color) {
+                if (x + 3 <= maxX && curColor === field[x + 3][y].color) {
                     toDelete.push(field[x + 3][y]);
                 }
-                if (x - 1 >= 0 && curColor == field[x - 1][y].color) {
+                if (x - 1 >= 0 && curColor === field[x - 1][y].color) {
                     toDelete.push(field[x - 1][y]);
                 }
             }
@@ -146,38 +141,34 @@ export default class Field extends Defaultable {
         if (toDelete.length) {
             this.clearRender = true;
 
-            for (var i = toDelete.length - 1; i >= 0; i--) {
+            for (let i = toDelete.length - 1; i >= 0; i--) {
                 toDelete[i].color = undefined;
             }
         }
     }
 
     removeDead () {
-        var field = this.field,
-            col,
-            newCol,
-            maxY;
-
-        for (var x = this.params.w - 1; x >= 0; x--) {
-            maxY = this.getFreeHeight(x);
-            if (this.params.h - 1 == maxY) {
+        for (let x = this.params.w - 1; x >= 0; x--) { // slightly faster loop
+            const maxY = this.getFreeHeight(x);
+            if (maxY + 1 === this.params.h) { // column is empty, skip to next one
                 continue;
             }
 
-            col = field[x];
-            newCol = col.filter((cube) => {
-                return !!cube.color
+            const currentCol = this.field[x];
+            const newCol = currentCol.filter((cube) => {
+                return cube.color !== undefined;
             });
 
-            if (newCol.length != col.length) {
-                if (col.length < this.params.h) {
-                    for (var i = 0; i < this.params.h; i++) {
-                        col[i] = {color: undefined};
+            if (newCol.length !== currentCol.length) { // something changed
+                if (currentCol.length < this.params.h) {
+                    for (let i = 0; i < this.params.h; i++) {
+                        currentCol[i] = {color: undefined};
                     }
                 }
             }
-
         }
+
+        this.printDebug();
     }
 
     /**
@@ -186,8 +177,8 @@ export default class Field extends Defaultable {
      * @returns {Number}
      */
     getFreeHeight (column) {
-        var height = 0;
-        for (var i = this.params.h - 1; i >= 0; i--) {
+        let height = 0;
+        for (let i = this.params.h - 1; i >= 0; i--) {
             if (!this.field[column][i].color) {
                 height = i + 1;
                 break
@@ -202,8 +193,8 @@ export default class Field extends Defaultable {
     }
 
     getColumnLowEnd () {
-        var physicalY = this.column.container.position.y + 3 * config.cubeSize,
-            logicalY = Math.floor(physicalY / config.cubeSize);
+        const physicalY = this.column.container.position.y + 3 * config.cubeSize;
+        const logicalY = Math.floor(physicalY / config.cubeSize);
 
         return {phys: physicalY, log: logicalY}
     }
@@ -216,9 +207,9 @@ export default class Field extends Defaultable {
         if (this.pause) {
             return;
         }
-        var current = this.getColumnLowEnd(),
-            maxAvail = this.getFreeHeightPhys(this.getColumnLogicalX()),
-            next = current.phys + this.currentSpeed;
+        const current = this.getColumnLowEnd();
+        const maxAvail = this.getFreeHeightPhys(this.getColumnLogicalX());
+        const next = current.phys + this.currentSpeed;
 
         if (next >= maxAvail) {
             this.column.container.position.y = maxAvail;
@@ -234,14 +225,14 @@ export default class Field extends Defaultable {
             return;
         }
 
-        var logX = this.getColumnLogicalX();
+        const logX = this.getColumnLogicalX();
 
-        if (logX == 0) {
+        if (logX === 0) {
             return;
         }
 
-        var current = this.getColumnLowEnd().phys,
-            leftMax = this.getFreeHeightPhys(logX - 1);
+        const current = this.getColumnLowEnd().phys;
+        const leftMax = this.getFreeHeightPhys(logX - 1);
 
         if (current <= leftMax) {
             this.column.container.position.x -= config.cubeSize;
@@ -253,14 +244,14 @@ export default class Field extends Defaultable {
             return;
         }
 
-        var logX = this.getColumnLogicalX();
+        const logX = this.getColumnLogicalX();
 
-        if (logX == config.stageSize.w - 1) {
+        if (logX === config.stageSize.w - 1) {
             return;
         }
 
-        var current = this.getColumnLowEnd().phys,
-            rightMax = this.getFreeHeightPhys(logX + 1);
+        const current = this.getColumnLowEnd().phys;
+        const rightMax = this.getFreeHeightPhys(logX + 1);
 
         if (current <= rightMax) {
             this.column.container.position.x += config.cubeSize;
@@ -272,10 +263,14 @@ export default class Field extends Defaultable {
     }
 
     dropColumn (x) {
-        var items = this.column.colors,
-            start = this.getFreeHeight(x) - 1;
+        const items = this.column.colors;
+        const start = this.getFreeHeight(x) - 1;
 
-        for (var i = 0; i < 3; i++) {
+        if (start < 0) {
+            alert('game over!');
+        }
+
+        for (let i = 0; i < 3; i++) {
             this.field[x][start - i].color = items[2 - i];
             this.shouldDie(x, start - i);
         }
@@ -297,8 +292,8 @@ export default class Field extends Defaultable {
     }
 
     ensureBG () {
-        var bgTexture = PIXI.Texture.fromImage('img/field.png');
-        var bg = new PIXI.Sprite(bgTexture);
+        const bgTexture = PIXI.Texture.fromImage('img/field.png');
+        const bg = new PIXI.Sprite(bgTexture);
 
         reNullPos(bg, {alpha: 0.2});
 
@@ -306,17 +301,17 @@ export default class Field extends Defaultable {
     }
 
     printDebug () {
-        var field = '',
-            row;
+        let field = '';
         for (var y = 0; y < this.params.h; y++) {
-            row = [];
-            for (var x = 0; x < this.params.w; x++) {
+            let row = [];
+            for (let x = 0; x < this.params.w; x++) {
                 row.push(this.field[x][y].color ? '*' : '-')
             }
             field += row.join(' ') + '\n';
         }
 
-        console.log(field);
+        $('pre').html(field);
+
         return field;
     }
 }

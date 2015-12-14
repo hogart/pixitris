@@ -6,6 +6,10 @@ import PIXI from '../node_modules/pixi.js/bin/pixi';
 import random from '../node_modules/rpg-tools/lib/random';
 import reNullPos from './reNullPos';
 
+function generateCube () {
+    return random.item(config.playable);
+}
+
 export default class Column extends Defaultable {
     defaults () {
         return {
@@ -26,33 +30,23 @@ export default class Column extends Defaultable {
         this.generateColumn();
     }
 
-    generateCube () {
-        return random.item(config.playable);
-    }
-
     generateColumn () {
-        var pushColors = this.colors.push.bind(this.colors);
-        var color;
-
         for (let i = 0; i < 3; i++) {
-            color = this.generateCube();
+            let color = generateCube();
 
-            pushColors(color);
+            this.colors.push(color);
         }
 
         this.render();
     }
 
     render () {
-        var addChild = this.container.addChild.bind(this.container);
-        var sprite;
-
         for (let i = 0; i < 3; i++) {
-            sprite = PIXI.Sprite.fromFrame(this.colors[i]);
+            let sprite = PIXI.Sprite.fromFrame(this.colors[i]);
 
             reNullPos(sprite, {y: 40 * i});
 
-            addChild(sprite);
+            this.container.addChild(sprite);
         }
     }
 

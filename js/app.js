@@ -29,9 +29,9 @@ function initStage (callback) {
         toRight = false,
         speed = 1;
 
-    var field = new Field();
+    const field = new Field();
 
-    initStage(function () {
+    initStage(() => {
         stage.addField(field);
 
         stage.start();
@@ -39,7 +39,7 @@ function initStage (callback) {
         currentColumn = new Column();
         field.setColumn(currentColumn);
 
-        stage.registerAnimate(function () {
+        stage.registerAnimate(() => {
             if (renew) {
                 field.removeColumn();
                 renew = false;

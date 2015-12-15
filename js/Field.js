@@ -305,7 +305,7 @@ export default class Field extends Defaultable {
         for (var y = 0; y < this.params.h; y++) {
             let row = [];
             for (let x = 0; x < this.params.w; x++) {
-                row.push(this.field[x][y].color ? '*' : '-')
+                row.push(this.field[x][y].color ? '■' : '·')
             }
             field += row.join(' ') + '\n';
         }

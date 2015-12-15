@@ -70,7 +70,7 @@ export default class Stage extends Defaultable {
     }
 
     setRenderer () {
-        this.renderer = PIXI.autoDetectRenderer(this.params.w, this.params.h, this.params.view, this.params.transparent);
+        this.renderer = PIXI.autoDetectRenderer(this.params.w, this.params.h, {vew: this.params.view, transparent: this.params.transparent});
     }
 
     loadSprites (sprites, callback) {

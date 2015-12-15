@@ -292,10 +292,10 @@ export default class Field extends Defaultable {
     }
 
     ensureBG () {
-        const bgTexture = PIXI.Texture.fromImage('img/field.png');
-        const bg = new PIXI.Sprite(bgTexture);
+        const bg = new PIXI.Sprite.fromImage('img/field.png');
+        bg.blendMode = PIXI.BLEND_MODES.ADD;
 
-        reNullPos(bg, {alpha: 0.2});
+        reNullPos(bg);
 
         this.container.addChild(bg);
     }

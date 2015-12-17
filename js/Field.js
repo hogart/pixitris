@@ -33,11 +33,6 @@ export default class Field extends Defaultable {
 
         this.cubesChildren = [];
         this.clearRender = false;
-//                this.field[0][11].color = 'green';
-//                this.field[1][11].color = 'blue';
-//                this.field[1][10].color = 'red';
-//
-//                this.printDebug();
     }
 
     initField () {
@@ -148,6 +143,8 @@ export default class Field extends Defaultable {
     }
 
     removeDead () {
+        const h = this.params.h;
+
         for (let x = this.params.w - 1; x >= 0; x--) { // slightly faster loop
             const maxY = this.getFreeHeight(x);
             if (maxY + 1 === this.params.h) { // column is empty, skip to next one
@@ -155,37 +152,61 @@ export default class Field extends Defaultable {
             }
 
             const currentCol = this.field[x];
-            const newCol = currentCol.filter((cube) => {
-                return cube.color !== undefined;
-            });
+            const hasHoles = this.hasHoles(x);
 
-            if (newCol.length !== currentCol.length) { // something changed
-                if (currentCol.length < this.params.h) {
-                    for (let i = 0; i < this.params.h; i++) {
-                        currentCol[i] = {color: undefined};
+            if (hasHoles) {
+                const newCol = [];
+
+                for (let cube of currentCol) {
+                    if (cube.color) {
+                        newCol.push(cube);
+                    } else {
+                        newCol.unshift(cube);
                     }
                 }
+
+                this.field[x] = newCol;
             }
         }
-
-        this.printDebug();
     }
 
     /**
-     * Find how much non-empty cells in this column
-     * @param {Number} column
+     * Find how much empty cells in this column
+     * @param {Number} columnNumber
      * @returns {Number}
      */
-    getFreeHeight (column) {
-        let height = 0;
-        for (let i = this.params.h - 1; i >= 0; i--) {
-            if (!this.field[column][i].color) {
-                height = i + 1;
-                break
+    getFreeHeight (columnNumber) {
+        let height = this.params.h;
+        let column = this.field[columnNumber];
+
+        for (let i = 0; i < this.params.h; i++) {
+            if (column[i].color !== undefined) {
+                height = i;
+                break;
             }
         }
 
         return height;
+    }
+
+	/**
+	 * Does this column has holes
+     * @param {Number} columnNumber
+     */
+    hasHoles (columnNumber) {
+        let hasFilled = false;
+        let hasHoles = false;
+        const column = this.field[columnNumber];
+        for (let i = 0; i < this.params.h; i++) {
+            if (column[i].color !== undefined) {
+                hasFilled = true;
+            } else if (hasFilled) {
+                hasHoles = true;
+                break;
+            }
+        }
+
+        return hasHoles;
     }
 
     getFreeHeightPhys (column) {

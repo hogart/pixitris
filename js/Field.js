@@ -280,6 +280,10 @@ export default class Field extends Defaultable {
     }
 
     shuffleColumn () {
+        if (this.pause) {
+            return;
+        }
+
         this.column.shuffle();
     }
 
@@ -300,6 +304,22 @@ export default class Field extends Defaultable {
         this.render();
 
         this.removeColumn();
+    }
+
+    speedUp () {
+        if (this.pause) {
+            return;
+        }
+
+        this.currentSpeed = 10;
+    }
+
+    speedDown () {
+        if (this.pause) {
+            return;
+        }
+
+        this.currentSpeed = 1;
     }
 
     setColumn (column) {

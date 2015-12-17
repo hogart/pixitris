@@ -54,7 +54,7 @@ function initStage (callback) {
     Mousetrap.bind('space', function () { field.pause = !field.pause });
     Mousetrap.bind(['left', 'a'], function () { field.moveLeft() });
     Mousetrap.bind(['right', 'd'], function () { field.moveRight() });
-    Mousetrap.bind(['down', 's'], function () { field.currentSpeed = 10; }, 'keydown');
-    Mousetrap.bind(['down', 's'], function () { field.currentSpeed = 1; }, 'keyup');
+    Mousetrap.bind(['down', 's'], function () { field.speedUp() }, 'keydown');
+    Mousetrap.bind(['down', 's'], function () { field.speedDown() }, 'keyup');
     Mousetrap.bind(['up', 'w'], function () { field.shuffleColumn() });
 }());

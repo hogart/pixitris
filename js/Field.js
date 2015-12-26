@@ -292,7 +292,9 @@ export default class Field extends Defaultable {
         const start = this.getFreeHeight(x) - 1;
 
         if (start < 0) {
-            alert('game over!');
+            this.pause = true;
+            this.gameOver = true;
+            return;
         }
 
         for (let i = 0; i < 3; i++) {

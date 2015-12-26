@@ -22,39 +22,26 @@ function initStage (callback) {
     })
 }
 
-(function () {
-    var renew = false,
-        currentColumn,
-        toLeft = false,
-        toRight = false,
-        speed = 1;
+var currentColumn;
 
-    const field = new Field();
+const field = new Field();
 
-    initStage(() => {
-        stage.addField(field);
+initStage(() => {
+    stage.addField(field);
 
-        stage.start();
+    stage.start();
 
-        currentColumn = new Column();
-        field.setColumn(currentColumn);
+    currentColumn = new Column();
+    field.setColumn(currentColumn);
 
-        stage.registerAnimate(() => {
-            if (renew) {
-                field.removeColumn();
-                renew = false;
-            } else {
-                field.moveDown();
-            }
-        })
-    });
+    stage.registerAnimate(() => {
+        field.moveDown();
+    })
+});
 
-    //$(document).on('click', function () { renew = true });
-
-    Mousetrap.bind('space', function () { field.pause = !field.pause });
-    Mousetrap.bind(['left', 'a'], function () { field.moveLeft() });
-    Mousetrap.bind(['right', 'd'], function () { field.moveRight() });
-    Mousetrap.bind(['down', 's'], function () { field.speedUp() }, 'keydown');
-    Mousetrap.bind(['down', 's'], function () { field.speedDown() }, 'keyup');
-    Mousetrap.bind(['up', 'w'], function () { field.shuffleColumn() });
-}());
+Mousetrap.bind('space', function () { field.pause = !field.pause });
+Mousetrap.bind(['left', 'a'], function () { field.moveLeft() });
+Mousetrap.bind(['right', 'd'], function () { field.moveRight() });
+Mousetrap.bind(['down', 's'], function () { field.speedUp() }, 'keydown');
+Mousetrap.bind(['down', 's'], function () { field.speedDown() }, 'keyup');
+Mousetrap.bind(['up', 'w'], function () { field.shuffleColumn() });

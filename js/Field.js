@@ -69,82 +69,313 @@ export default class Field extends Defaultable {
         }
     }
 
+    isCoordsValid (x, y) {
+        return (x >= 0) && (x < this.params.w) && (y >= 0) && (y < this.params.h)
+    }
+
+    compareCells (x, y, [dx, dy]) {
+        if (this.isCoordsValid(x + dx, y + dy)) {
+            return this.field[x][y].color === this.field[x + dx][y + dy].color;
+        } else {
+            return false;
+        }
+    }
+
     shouldDie (x, y) {
         const field = this.field;
-        const curColor = field[x][y].color;
 
         if (!field[x][y].color) {
             return
         }
 
-        const toDelete = [];
-        const maxX = this.params.w - 1;
-        const maxY = this.params.h - 1;
+        const deleteOffsets = [];
 
-        // horizontal right
-        if (x + 1 <= maxX && curColor === field[x + 1][y].color) {
-            if (x + 2 <= maxX && curColor === field[x + 2][y].color) {
-                toDelete.push(field[x][y], field[x + 1][y], field[x + 2][y]);
-                if (x + 3 <= maxX && curColor === field[x + 3][y].color) {
-                    toDelete.push(field[x + 3][y]);
+        var offsets = {
+            right: [1, 0],
+            right2: [2, 0],
+            right3: [3, 0],
+
+            left: [-1, 0],
+            left2: [-2, 0],
+            left3: [-3, 0],
+
+            down: [0, 1],
+            down2: [0, 2],
+            down3: [0, 3],
+
+            up: [0, -1],
+            up2: [0, -2],
+            up3: [0, -3],
+
+            downRight: [1, 1],
+            downRight2: [2, 2],
+            downRight3: [3, 3],
+
+            downLeft: [-1, 1],
+            downLeft2: [-2, 2],
+            downLeft3: [-3, 3],
+
+            upRight: [1, -1],
+            upRight2: [2, -2],
+            upRight3: [3, -3],
+
+            upLeft: [-1, -1],
+            upLeft2: [-2, -2],
+            upLeft3: [-3, -3]
+        };
+
+        const check = this.compareCells.bind(this, x, y);
+
+        // horizontal check - right
+        if (check(offsets.right)) {
+            if (check(offsets.right2)) {
+                deleteOffsets.push([0, 0], offsets.right, offsets.right2);
+
+                if (check(offsets.right3)) {
+                    deleteOffsets.push(offsets.right3)
                 }
-                if (x - 1 >= 0 && curColor === field[x - 1][y].color) {
-                    toDelete.push(field[x - 1][y]);
+
+                if (check(offsets.left)) {
+                    deleteOffsets.push(offsets.left)
+                }
+
+                if (check(offsets.left2)) {
+                    deleteOffsets.push(offsets.left2)
+                }
+            }
+
+            if (check(offsets.left)) {
+                deleteOffsets.push(offsets.left);
+
+                if (check(offsets.left2)) {
+                    deleteOffsets.push(offsets.left2);
+
+                    if (check(offsets.left3)) {
+                        deleteOffsets.push(offsets.left3)
+                    }
+
+                    if (check(offsets.right)) {
+                        deleteOffsets.push(offsets.right)
+                    }
+
+                    if (check(offsets.right2)) {
+                        deleteOffsets.push(offsets.right2)
+                    }
                 }
             }
         }
 
-        // vertical down
-        if (y + 1 <= maxY && curColor == field[x][y + 1].color) {
-            if (y + 2 <= maxY && curColor == field[x][y + 2].color) {
-                toDelete.push(field[x][y], field[x][y + 1], field[x][y + 2]);
-                if (y + 3 <= maxY && curColor == field[x][y + 3].color) {
-                    toDelete.push(field[x][y + 3]);
+        // horizontal check - left
+        if (check(offsets.left)) {
+            if (check(offsets.left2)) {
+                deleteOffsets.push([0, 0], offsets.left, offsets.left2);
+
+                if (check(offsets.left3)) {
+                    deleteOffsets.push(offsets.left3)
                 }
-                if (y - 1 >= 0 && curColor == field[x][y - 1].color) {
-                    toDelete.push(field[x][y - 1]);
+
+                if (check(offsets.right)) {
+                    deleteOffsets.push(offsets.right)
+                }
+
+                if (check(offsets.right2)) {
+                    deleteOffsets.push(offsets.right2)
+                }
+            }
+
+            if (check(offsets.right)) {
+                deleteOffsets.push(offsets.right);
+
+                if (check(offsets.right2)) {
+                    deleteOffsets.push(offsets.right2);
+
+                    if (check(offsets.right3)) {
+                        deleteOffsets.push(offsets.right3)
+                    }
+
+                    if (check(offsets.left)) {
+                        deleteOffsets.push(offsets.left)
+                    }
+
+                    if (check(offsets.left2)) {
+                        deleteOffsets.push(offsets.left2)
+                    }
                 }
             }
         }
 
-        // diagonal down-right \
-        if ((x + 1 <= maxX) && (y + 1 <= maxY) && curColor == field[x + 1][y + 1].color) {
-            if ((x + 2 <= maxX) && (y + 2 <= maxY) && curColor == field[x + 2][y + 2].color) {
-                toDelete.push(field[x][y], field[x + 1][y + 1], field[x + 2][y + 2]);
+        // vertical check - down
+        if (check(offsets.down)) {
+            if (check(offsets.down2)) {
+                deleteOffsets.push([0, 0], offsets.down, offsets.down2);
+
+                if (check(offsets.down3)) {
+                    deleteOffsets.push(offsets.down3)
+                }
+
+                if (check(offsets.up)) {
+                    deleteOffsets.push(offsets.up)
+                }
+
+                if (check(offsets.up2)) {
+                    deleteOffsets.push(offsets.up2)
+                }
             }
-            if ((x + 3 <= maxX) && (y + 3 <= maxY) && curColor == field[x + 3][y + 3].color) {
-                toDelete.push(field[x + 3][y + 3]);
-            }
-            if ((x - 1 >= 0) && (y - 1 >= 0) && curColor == field[x - 1][y - 1].color) {
-                toDelete.push(field[x - 1][y - 1]);
+
+            if (check(offsets.up)) {
+                deleteOffsets.push(offsets.up);
+
+                if (check(offsets.up2)) {
+                    deleteOffsets.push(offsets.left2);
+
+                    if (check(offsets.left3)) {
+                        deleteOffsets.push(offsets.left3)
+                    }
+
+                    if (check(offsets.down)) {
+                        deleteOffsets.push(offsets.right)
+                    }
+
+                    if (check(offsets.right2)) {
+                        deleteOffsets.push(offsets.right2)
+                    }
+                }
             }
         }
 
-        // diagonal down-left /
-        if ((x - 1 <= 0) && (y - 1 <= 0) && curColor == field[x - 1][y - 1].color) {
-            if ((x - 2 >= 0) && (y - 2 >= 0) && curColor == field[x - 2][y - 2].color) {
-                toDelete.push(field[x][y], field[x - 1][y - 1], field[x - 2][y - 2]);
+        // horizontal check - up
+        if (check(offsets.up)) {
+            if (check(offsets.up2)) {
+                deleteOffsets.push([0, 0], offsets.up, offsets.up2);
+
+                if (check(offsets.up3)) {
+                    deleteOffsets.push(offsets.up3)
+                }
+
+                if (check(offsets.down)) {
+                    deleteOffsets.push(offsets.down)
+                }
+
+                if (check(offsets.down2)) {
+                    deleteOffsets.push(offsets.down2)
+                }
             }
-            if ((x - 3 >= 0) && (y - 3 >= 0) && curColor == field[x - 3][y - 3].color) {
-                toDelete.push(field[x - 3][y - 3]);
-            }
-            if ((x + 1 <= maxX) && (y + 1 <= maxY) && curColor == field[x + 1][y + 1].color) {
-                toDelete.push(field[x + 1][y + 1]);
+
+            if (check(offsets.down)) {
+                deleteOffsets.push(offsets.down);
+
+                if (check(offsets.down2)) {
+                    deleteOffsets.push(offsets.down2);
+
+                    if (check(offsets.down3)) {
+                        deleteOffsets.push(offsets.down3)
+                    }
+
+                    if (check(offsets.up)) {
+                        deleteOffsets.push(offsets.up)
+                    }
+
+                    if (check(offsets.up2)) {
+                        deleteOffsets.push(offsets.up2)
+                    }
+                }
             }
         }
 
-        if (toDelete.length) {
+        // diagonal check - downRight
+        if (check(offsets.downRight)) {
+            if (check(offsets.downRight2)) {
+                deleteOffsets.push([0, 0], offsets.downRight, offsets.downRight2);
+
+                if (check(offsets.downRight3)) {
+                    deleteOffsets.push(offsets.downRight3)
+                }
+
+                if (check(offsets.upLeft)) {
+                    deleteOffsets.push(offsets.upLeft)
+                }
+
+                if (check(offsets.upLeft2)) {
+                    deleteOffsets.push(offsets.upLeft2)
+                }
+            }
+
+            if (check(offsets.upLeft)) {
+                deleteOffsets.push(offsets.upLeft);
+
+                if (check(offsets.upLeft2)) {
+                    deleteOffsets.push(offsets.upLeft2);
+
+                    if (check(offsets.upLeft3)) {
+                        deleteOffsets.push(offsets.upLeft3)
+                    }
+
+                    if (check(offsets.downRight)) {
+                        deleteOffsets.push(offsets.downRight)
+                    }
+
+                    if (check(offsets.downRight2)) {
+                        deleteOffsets.push(offsets.downRight2)
+                    }
+                }
+            }
+        }
+
+        // horizontal check - upLeft \
+        if (check(offsets.upLeft)) {
+            if (check(offsets.upLeft2)) {
+                deleteOffsets.push([0, 0], offsets.upLeft, offsets.upLeft2);
+
+                if (check(offsets.upLeft3)) {
+                    deleteOffsets.push(offsets.upLeft3)
+                }
+
+                if (check(offsets.downRight)) {
+                    deleteOffsets.push(offsets.downRight)
+                }
+
+                if (check(offsets.downRight2)) {
+                    deleteOffsets.push(offsets.downRight2)
+                }
+            }
+
+            if (check(offsets.downRight)) {
+                deleteOffsets.push(offsets.downRight);
+
+                if (check(offsets.downRight2)) {
+                    deleteOffsets.push(offsets.downRight2);
+
+                    if (check(offsets.downRight3)) {
+                        deleteOffsets.push(offsets.downRight3)
+                    }
+
+                    if (check(offsets.upLeft)) {
+                        deleteOffsets.push(offsets.upLeft)
+                    }
+
+                    if (check(offsets.upLeft2)) {
+                        deleteOffsets.push(offsets.upLeft2)
+                    }
+                }
+            }
+        }
+        
+        if (deleteOffsets.length) {
             this.clearRender = true;
 
-            for (let i = toDelete.length - 1; i >= 0; i--) {
-                toDelete[i].color = undefined;
+            this.addScores(deleteOffsets.length);
+
+            for (let offset of deleteOffsets) {
+                field[x + offset[0]][y + offset[1]].color = undefined;
             }
         }
     }
 
-    removeDead () {
-        const h = this.params.h;
+    addScores (gemsAmount) {
+        console.log(100 + 70 * (gemsAmount - 3));
+    }
 
+    removeDead () {
         for (let x = this.params.w - 1; x >= 0; x--) { // slightly faster loop
             const maxY = this.getFreeHeight(x);
             if (maxY + 1 === this.params.h) { // column is empty, skip to next one
